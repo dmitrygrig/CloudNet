@@ -39,15 +39,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dmytro
  */
-public class ElasticityManagerUnefficient implements ElasticityManager {
+public class ElasticityManagerUneffective implements ElasticityManager {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticityManagerUnefficient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticityManagerUneffective.class);
 
     private final Map<Integer, Long> consumedMipsPerPm = new HashMap<>();
     private final List<Integer> usedPms = new ArrayList<>();
     private final VmMigrationPolicy migrationPolicy;
 
-    public ElasticityManagerUnefficient(VmMigrationPolicy migrationPolicy) {
+    public ElasticityManagerUneffective(VmMigrationPolicy migrationPolicy) {
         this.migrationPolicy = migrationPolicy;
     }
 

@@ -29,7 +29,7 @@ import cloudnet.core.TimeFrame;
 import cloudnet.elasticity.ElasticityManager;
 import cloudnet.elasticity.ElasticityManagerFirstFitOptimistic;
 import cloudnet.elasticity.ElasticityManagerFirstFitPesimistic;
-import cloudnet.elasticity.ElasticityManagerUnefficient;
+import cloudnet.elasticity.ElasticityManagerUneffective;
 import cloudnet.examples.bn.ElasiticityManagerMCDA;
 import cloudnet.iaas.IaaSCloud;
 import cloudnet.iaas.IaaSScheduler;
@@ -131,7 +131,7 @@ public class ScenarioEvaluator {
             elasticityManager = new ElasiticityManagerMCDA(clock,
                     sc.getPredStrategy(), sc.getMigrPolicy());
         } else if (sc.getEm() == EM_UE) {
-            elasticityManager = new ElasticityManagerUnefficient(sc.getMigrPolicy());
+            elasticityManager = new ElasticityManagerUneffective(sc.getMigrPolicy());
         }
 
         // Create cloud
