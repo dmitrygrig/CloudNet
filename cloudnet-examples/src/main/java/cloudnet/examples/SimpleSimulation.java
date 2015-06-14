@@ -28,6 +28,8 @@ import cloudnet.core.Pm;
 import cloudnet.core.TimeFrame;
 import cloudnet.elasticity.AlwaysVmMigrationPolicy;
 import cloudnet.elasticity.ElasticityManagerFirstFitOptimistic;
+import cloudnet.elasticity.ElasticityManagerFirstFitPesimistic;
+import cloudnet.elasticity.ElasticityManagerInefficient;
 import cloudnet.sim.SimEngine;
 import cloudnet.sim.SimEngineSimple;
 import cloudnet.pm.PmSpecPowerHpProLiantMl110G3PentiumD930;
@@ -66,15 +68,22 @@ public class SimpleSimulation {
         SimClock clock = new SimClock(TimeFrame.Sec);
 
         // Create cloud
-        Cloud cloud = new IaaSCloud(1, clock, new ElasticityManagerFirstFitOptimistic(new AlwaysVmMigrationPolicy()));
+        Cloud cloud = new IaaSCloud(1, clock, new ElasticityManagerInefficient());
+        
+        // attach monitor
         cloud.setMonitor(new PassiveMonitoringSystem(new CsvHistoryWriter("resources/cloud.csv", "out/dcs.csv", "out/pms.csv", "out/vms.csv", 1000, false)));
 
-        // Create datacenters
-        cloud.addDatacenter(createDatacenter(clock, new RioDeJaneiro(), new MechanicalCoolingModel()));
-        cloud.addDatacenter(createDatacenter(clock, new Oslo(), new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel())));
-        cloud.addDatacenter(createDatacenter(clock, new Tokyo(), new MechanicalCoolingModel()));
-        cloud.addDatacenter(createDatacenter(clock, new Vienna(), new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel())));
-        cloud.addDatacenter(createDatacenter(clock, new Toronto(), new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel())));
+        // Create datacenter (DC)
+        Datacenter dc = Datacenter.forLocation(1, clock, new Oslo());
+        dc.setCoolingModel(new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel()));
+        
+        // add one PM to the DC
+        Pm pm = new Pm(1, clock, new PmSpecPowerHpProLiantMl110G3PentiumD930());
+        pm.setMipsProvisioner(new GreedyProvisioner());
+        pm.setRamProvisioner(new GreedyProvisioner());
+        pm.setSizeProvisioner(new GreedyProvisioner());
+        pm.setBwProvisioner(new GreedyProvisioner());
+        dc.addPm(pm);
 
         // Create cloud simulator
         Scheduler scheduler = new IaaSScheduler(new VmGeneratorOnce(new VmSpecAzureA1(), 2));
