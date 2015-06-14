@@ -59,7 +59,9 @@ LOGGER.info("Total Costs: %.2f", cloud.getCosts());
 The framework consists of the following parts: 
 * **Simulation core**: different implementations of simulation engines as well as simulation clock that shows the actual simulation time. The actual simulation time can be polled by any object but can only be set by the simulation engine responsible for this.
 * **Cloud domain**: all main cloud entities, models and interfaces.
-* **Physical specifications**: implementation of different physical models that are utilized during runtime of cloud infrastructure.
+* **Physical models package**: implementation of various physical models (resource utilization, cooling, weather, power outages, energy prices, etc.) that are utilized during runtime of cloud infrastructure.
 * **MOM**: communication between different loose-coupled components of a simulated cloud.
 * **Monitoring infrastructure**: attachable observers that monitor ans make snaphots of cloud entity states and log them into different output formats for further analysis.
 * **Data-collecting utilities**: a set of utilities that are responsible for downloading and transformation of various weather data from different Web services.
+* **Locations**: a set of locations with pre-configured physical models based on real statistics.
+* **SLAs**: a set of cloud service Service level agreements (SLAs)
