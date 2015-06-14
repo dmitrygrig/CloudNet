@@ -1,5 +1,5 @@
 # Overview
-Java framework for cloud computing simulations. **CloudNet** allows a cloud provider to test its infrastructure in repeatable and controllable way, to find and avoid performance bottlenecks, evaluate different cloud management scenarios under varying geo-aware, load and pricing conditions. The most important features of **CloudNet* that distinguish it among other similar frameworks are the simulation of distributed DCs, computing costs of cooling, scheduling energy power outages, usage of synthetic and real weather data, and modeling different energy price strategies under several SLA policies. 
+Java framework for cloud computing simulations. **CloudNet** allows a cloud provider to test its infrastructure in repeatable and controllable way, to find and avoid performance bottlenecks, evaluate different cloud management scenarios under varying geo-aware, load and pricing conditions. The most important features of **CloudNet** that distinguish it among other similar frameworks are the simulation of distributed DCs, computing costs of cooling, scheduling energy power outages, usage of synthetic and real weather data, and modeling different energy price strategies under several SLA policies. 
 
 Cloudnet was designed and implemented on the basis of loose-coupling paradigms that assumes decoupling of different simulated components from each other and their communication through the Message-oriented middleware (MOM). The dependent components of the system interact with each other through interfaces that allows simple extension of almost each part of the framework and highly configurable possibilities that captures many simulation use cases.
 
@@ -28,7 +28,9 @@ Datacenter dc = Datacenter.forLocation(1, clock, new Oslo());
 // mechanical cooling infrastructure if temperate is higher 18 degrees, 
 // or mixed cooling otherwise.
 dc.setCoolingModel(
-	new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel()));
+	new MixedCoolingModel(10.0, 18.0, 
+							new AirCoolingModel(), 
+							new MechanicalCoolingModel()));
 
 // add one "HP ProLiant DL580 G3" to the DC
 Pm pm = new Pm(1, clock, new PmSpecPowerHpProLiantMl110G3PentiumD930());
