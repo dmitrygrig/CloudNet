@@ -1,11 +1,10 @@
 /*
+ * Copyright (C) 2014 Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  *
- * Copyright (C) 2015 Dmytro Grygorenko <dmitrygrig@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,7 +12,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package cloudnet.util;
 
@@ -26,11 +26,8 @@ import org.slf4j.LoggerFactory;
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
 public class Ensure {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(Ensure.class);
-
-    private Ensure() {
-    }
 
     /**
      * Is assert used. See more:
@@ -72,100 +69,107 @@ public class Ensure {
 
     public final static void IsTrue(boolean value, String message) {
         if (!value) {
-            throw new IllegalStateException(message);
+            throw new IllegalArgumentException(String.format("%s cannot be null.", message));
         }
     }
 
     public final static void IsFalse(boolean value, String message) {
         if (value) {
-            throw new IllegalStateException(message);
+            throw new IllegalArgumentException(String.format("%s cannot be null.", message));
         }
     }
 
     public final static void AreEquals(Object value, Object expected, String message) {
         if ((value == null && expected != null)
                 || (value != null && !(value.equals(expected)))) {
-            throw new IllegalStateException(String.format("%s should equal %s.", message, expected == null ? "<null>" : expected.toString()));
+            throw new IllegalArgumentException(String.format("%s should equal %s.", message, expected == null ? "<null>" : expected.toString()));
         }
     }
 
     public final static void AreNotEquals(Object value, Object expected, String message) {
         if ((value == null && expected == null)
                 || (value != null && (value.equals(expected)))) {
-            throw new IllegalStateException(String.format("%s should not equal %s.", message, expected == null ? "<null>" : expected.toString()));
+            throw new IllegalArgumentException(String.format("%s should not equal %s, but was %s.", 
+                    message, expected == null ? "<null>" : expected.toString(), value == null ? "<null>" : value.toString()));
         }
     }
 
     public final static void BetweenInclusive(long value, long lowerExpected, long upperExpected, String message) {
-        check(value >= lowerExpected && value <= upperExpected, String.format("%s should be between %d and %d inclusive.", message, lowerExpected, upperExpected));
+        check(value >= lowerExpected && value <= upperExpected, String.format("%s should be between %d and %d inclusive, but was %d.", 
+                message, lowerExpected, upperExpected, value));
     }
 
     public final static void BetweenExclusive(long value, long lowerExpected, long upperExpected, String message) {
-        check(value > lowerExpected && value < upperExpected, String.format("%s should be between %d and %d exclusive.", message, lowerExpected, upperExpected));
+        check(value > lowerExpected && value < upperExpected, String.format("%s should be between %d and %d exclusive, but was %d.", 
+                message, lowerExpected, upperExpected, value));
     }
 
     public final static void BetweenInclusive(int value, int lowerExpected, int upperExpected, String message) {
-        check(value >= lowerExpected && value <= upperExpected, String.format("%s should be between %d and %d inclusive.", message, lowerExpected, upperExpected));
+        check(value >= lowerExpected && value <= upperExpected, String.format("%s should be between %d and %d inclusive, but was %d.", 
+                message, lowerExpected, upperExpected, value));
     }
 
     public final static void BetweenExclusive(int value, int lowerExpected, int upperExpected, String message) {
-        check(value > lowerExpected && value < upperExpected, String.format("%s should be between %d and %d exclusive.", message, lowerExpected, upperExpected));
+        check(value > lowerExpected && value < upperExpected, String.format("%s should be between %d and %d exclusive, but was %d.", 
+                message, lowerExpected, upperExpected, value));
     }
 
     public final static void BetweenInclusive(double value, double lowerExpected, double upperExpected, String message) {
-        check(value >= lowerExpected && value <= upperExpected, String.format("%s should be between %f and %f inclusive.", message, lowerExpected, upperExpected));
+        check(value >= lowerExpected && value <= upperExpected, String.format("%s should be between %f and %f inclusive, but was %f.", 
+                message, lowerExpected, upperExpected, value));
     }
 
     public final static void BetweenExclusive(double value, double lowerExpected, double upperExpected, String message) {
-        check(value > lowerExpected && value < upperExpected, String.format("%s should be between %f and %f exclusive.", message, lowerExpected, upperExpected));
+        check(value > lowerExpected && value < upperExpected, String.format("%s should be between %f and %f exclusive, but was %f.", 
+                message, lowerExpected, upperExpected, value));
     }
 
     public final static void GreaterThan(long value, long expected, String message) {
-        check(value > expected, String.format("%s should be greater than %d.", message, expected));
+        check(value > expected, String.format("%s should be greater than %d, but was %d.", message, expected, value));
     }
 
     public final static void GreaterThanOrEquals(long value, long expected, String message) {
-        check(value >= expected, String.format("%s should be greater than or equal to %d.", message, expected));
+        check(value >= expected, String.format("%s should be greater than or equal to %d, but was %d.", message, expected, value, value));
     }
 
     public final static void GreaterThan(int value, int expected, String message) {
-        check(value > expected, String.format("%s should be greater than %d.", message, expected));
+        check(value > expected, String.format("%s should be greater than %d, but was %d.", message, expected, value));
     }
 
     public final static void GreaterThanOrEquals(int value, int expected, String message) {
-        check(value >= expected, String.format("%s should be greater than or equal to %d.", message, expected));
+        check(value >= expected, String.format("%s should be greater than or equal to %d, but was %d.", message, expected, value));
     }
 
     public final static void GreaterThan(double value, double expected, String message) {
-        check(value > expected, String.format("%s should be greater than %f.", message, expected));
+        check(value > expected, String.format("%s should be greater than %f, but was %f.", message, expected, value));
     }
 
     public final static void GreaterThanOrEquals(double value, double expected, String message) {
-        check(value >= expected, String.format("%s should be greater than or equal to %f.", message, expected));
+        check(value >= expected, String.format("%s should be greater than or equal to %f, but was %f.", message, expected, value));
     }
 
     public final static void LowerThan(long value, long expected, String message) {
-        check(value < expected, String.format("%s should be greater than %d.", message, expected));
+        check(value < expected, String.format("%s should be greater than %d, but was %d.", message, expected, value));
     }
 
     public final static void LowerThanOrEquals(long value, long expected, String message) {
-        check(value <= expected, String.format("%s should be greater than or equal to %d.", message, expected));
+        check(value <= expected, String.format("%s should be greater than or equal to %d, but was %d.", message, expected, value));
     }
 
     public final static void LowerThan(int value, int expected, String message) {
-        check(value < expected, String.format("%s should be greater than %d.", message, expected));
+        check(value < expected, String.format("%s should be greater than %d, but was %d.", message, expected, value));
     }
 
     public final static void LowerThanOrEquals(int value, int expected, String message) {
-        check(value <= expected, String.format("%s should be greater than or equal to %d.", message, expected));
+        check(value <= expected, String.format("%s should be greater than or equal to %d, but was %d.", message, expected, value));
     }
 
     public final static void LowerThan(double value, double expected, String message) {
-        check(value < expected, String.format("%s should be greater than %f.", message, expected));
+        check(value < expected, String.format("%s should be greater than %f, but was %f.", message, expected, value));
     }
 
     public final static void LowerThanOrEquals(double value, double expected, String message) {
-        check(value <= expected, String.format("%s should be greater than or equal to %f.", message, expected));
+        check(value <= expected, String.format("%s should be greater than or equal to %f, but was %f.", message, expected, value));
     }
 
     private static void check(boolean condition, String message) {
@@ -173,9 +177,9 @@ public class Ensure {
             assert condition;
         } else {
             if (!condition) {
-                LOGGER.error(message, new IllegalStateException(message));
+                LOGGER.error(message, new IllegalArgumentException(message));
                 if (throwEnabled) {
-                    throw new IllegalStateException(message);
+                    throw new IllegalArgumentException(message);
                 }
             }
         }

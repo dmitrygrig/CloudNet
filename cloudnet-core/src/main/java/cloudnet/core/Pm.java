@@ -138,6 +138,7 @@ public class Pm extends CloudEntity {
      * @return the value of availableMips
      */
     public long getAvailableMips(long timestamp) {
+        this.getVms().stream().map(x-> x);
         return getSpec().getMips() - getVms().stream().mapToLong(x -> x.getProvisionedMipsOrDefault(timestamp)).sum();
     }
 

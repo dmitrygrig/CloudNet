@@ -1,11 +1,10 @@
 /*
+ * Copyright (C) 2014 Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  *
- * Copyright (C) 2015 Dmytro Grygorenko <dmitrygrig@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,7 +12,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package cloudnet.core;
 
@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
 public class Vm extends CloudEntity {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(Vm.class);
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Vm.class);
+    
     /**
      * The id of the user Vm belongs to.
      */
@@ -117,6 +117,12 @@ public class Vm extends CloudEntity {
      * The server where VM is being migrated.
      */
     private Pm migratedToServer;
+    
+    
+    /**
+     * 
+     */
+    private boolean shouldBeMigrated;
 
     /**
      * The time between current time and last time where there was enough
@@ -171,6 +177,14 @@ public class Vm extends CloudEntity {
 
     private void setMigratedToServer(Pm migratedToServer) {
         this.migratedToServer = migratedToServer;
+    }
+
+    public boolean shouldBeMigrated() {
+        return shouldBeMigrated;
+    }
+
+    public void setShouldBeMigrated(boolean shouldBeMigrated) {
+        this.shouldBeMigrated = shouldBeMigrated;
     }
 
     public WorkloadModel getSizeWorkloadModel() {
@@ -517,7 +531,7 @@ public class Vm extends CloudEntity {
 //        requested = getRequestedBw();
 //        provisioned = getRequestedBw();
 //        if (requested > provisioned) {
-//            LOGGER.warn("There is not enough bw for %s, requested=%d,provisioned=%d",
+//            Log.warn("There is not enough bw for %s, requested=%d,provisioned=%d",
 //                    this.toShortString(), requested, provisioned);
 //        }
 //
@@ -525,7 +539,7 @@ public class Vm extends CloudEntity {
 //        requested = getRequestedRam();
 //        provisioned = getProvisionedRam();
 //        if (requested > provisioned) {
-//            LOGGER.warn("There is not enough ram for %s, requested=%d,provisioned=%d",
+//            Log.warn("There is not enough ram for %s, requested=%d,provisioned=%d",
 //                    this.toShortString(), requested, provisioned);
 //        }
 //
@@ -533,7 +547,7 @@ public class Vm extends CloudEntity {
 //        requested = getRequestedSize();
 //        provisioned = getProvisionedSize();
 //        if (requested > provisioned) {
-//            LOGGER.warn("There is not enough size for %s, requested=%d,provisioned=%d",
+//            Log.warn("There is not enough size for %s, requested=%d,provisioned=%d",
 //                    this.toShortString(), requested, provisioned);
 //        }
 //        
@@ -544,28 +558,36 @@ public class Vm extends CloudEntity {
     public void simulateExecutionWork() {
         if (!isAllocated()) {
             setInDowntime(true);
-            this.inShortDowntime = true;
-            this.cummulativeDowntime += getClock().diff();
+//            this.inShortDowntime = true;
+//            this.cummulativeDowntime += getClock().diff();
         } else if (!isEnoughResources()) {
             LOGGER.warn("%s is allocated on %s, but there is not enough resources for execution that results in downtime.",
                     toShortString(), getServer().toShortString());
             setInDowntime(true);
-            this.cummulativeDowntime += getClock().diff();
-            this.inShortDowntime = true;
+//            this.cummulativeDowntime += getClock().diff();
+//            this.inShortDowntime = true;
         } else {
             // obtain duration of poweroutage for the last step
             long shortTermDowntime = getServer().getDatacenter().getPowerOutageDuration();
             this.inShortDowntime = shortTermDowntime != 0L;
-            // if it equals diff, set downtime to true
-            if (shortTermDowntime == getClock().diff()) {
-                setInDowntime(true);
-                this.cummulativeDowntime += getClock().diff();
-            } else {
-                setInDowntime(false);
+            if (inShortDowntime) {
                 this.increaseRunningTime(getClock().diff() - shortTermDowntime);
-                this.cummulativeDowntime = 0L;
+                this.cummulativeDowntime += shortTermDowntime;
+            } else {
+                this.increaseRunningTime(getClock().diff());
             }
+            setInDowntime(false);
+            // if it equals diff, set downtime to true
+//            if (shortTermDowntime >= getClock().diff()) {
+//                setInDowntime(true);
+//                this.cummulativeDowntime += getClock().diff();
+//            } else {
+//                setInDowntime(false);
+//                this.increaseRunningTime(getClock().diff() - shortTermDowntime);
+//                this.cummulativeDowntime = shortTermDowntime;
+//            }
         }
+
     }
 
     @Override
