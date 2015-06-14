@@ -6,7 +6,7 @@ Cloudnet was designed and implemented on the basis of loose-coupling paradigms t
 # Getting started
 The following listing represents use case of simulation of a IaaS cloud with one single DC and one host inside it:
 ```
-// Create simulation clock
+// Create simulation clock with granularity (simulation step) of 1 sec
 SimClock clock = new SimClock(TimeFrame.Sec);
 
 // Create new IaaS cloud with elastic load balancer based on First-Fit algorithm
@@ -40,11 +40,11 @@ pm.setSizeProvisioner(new GreedyProvisioner());
 pm.setBwProvisioner(new GreedyProvisioner());
 dc.addPm(pm);
 
-// Create new IaaS cloud scheduler that will schedule 2 VMs 
+// Create new IaaS cloud scheduler that schedules once 2 VMs 
 // with characteristics of VM A1 from Microsoft Azure.
 Scheduler scheduler = new IaaSScheduler(new VmGeneratorOnce(new VmSpecAzureA1(), 2));
 
-// Create new simulation engine 
+// Create new simulation engine that will execute 3600 simulation steps
 SimEngine engine = new SimEngineSimple(clock, scheduler, cloud, 3600);
 
 // Perform simulation
