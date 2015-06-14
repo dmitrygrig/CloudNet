@@ -20,13 +20,13 @@ cloud.setMonitor(new PassiveMonitoringSystem(
 						"out/pms.csv", 
 						"out/vms.csv", 1000, false)));
 
-// Create new datacenter (DC) in Oslo
+// Create new data center (DC) in Oslo
 Datacenter dc = Datacenter.forLocation(1, clock, new Oslo());
 
-// Set model for cooling of cloud infrastructure that uses cold air 
+// Set model for cooling of the cloud infrastructure that uses cold air 
 // for cooling when outside temperature is less than 10 degrees, 
-// mechanical cooling infrastructure if temperate is higher 18 degrees, 
-// or mixed cooling otherwise.
+// mechanical cooling infrastructure if temperate is higher than 18 degrees, 
+// or mixed cooling of both otherwise.
 dc.setCoolingModel(
 	new MixedCoolingModel(10.0, 18.0, 
 							new AirCoolingModel(), 
@@ -47,7 +47,7 @@ Scheduler scheduler = new IaaSScheduler(new VmGeneratorOnce(new VmSpecAzureA1(),
 // Create new simulation engine that will execute 3600 simulation steps
 SimEngine engine = new SimEngineSimple(clock, scheduler, cloud, 3600);
 
-// Perform simulation
+// Perform simulations
 engine.start();
 engine.stop();
 
