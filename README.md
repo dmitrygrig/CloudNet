@@ -5,7 +5,7 @@ Cloudnet was designed and implemented on the basis of loose-coupling paradigms t
 
 # Getting started
 The following listing represents use case of simulation of a IaaS cloud with one single DC and one host inside it:
-```
+```java
 // Create simulation clock with granularity (simulation step) of 1 sec
 SimClock clock = new SimClock(TimeFrame.Sec);
 
