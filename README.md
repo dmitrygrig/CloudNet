@@ -1,25 +1,34 @@
 # Overview
-Java framework for cloud computing simulations. CloudNet allows a cloud provider to test its infrastructure in repeatable and controllable way, to find and avoid performance bottlenecks, evaluate different cloud management scenarios under varying geo-aware, load and pricing conditions. The most important features of CloudNet that distinguish it among other similar frameworks are the simulation of distributed DCs, computing costs of cooling, scheduling energy power outages, usage of synthetic and real weather data, and modeling different energy price strategies under several SLA policies. 
+Java framework for cloud computing simulations. **CloudNet** allows a cloud provider to test its infrastructure in repeatable and controllable way, to find and avoid performance bottlenecks, evaluate different cloud management scenarios under varying geo-aware, load and pricing conditions. The most important features of **CloudNet* that distinguish it among other similar frameworks are the simulation of distributed DCs, computing costs of cooling, scheduling energy power outages, usage of synthetic and real weather data, and modeling different energy price strategies under several SLA policies. 
 
 Cloudnet was designed and implemented on the basis of loose-coupling paradigms that assumes decoupling of different simulated components from each other and their communication through the Message-oriented middleware (MOM). The dependent components of the system interact with each other through interfaces that allows simple extension of almost each part of the framework and highly configurable possibilities that captures many simulation use cases.
 
 # Getting started
-The following listing represents 
+The following listing represents use case of simulation of a IaaS cloud with one single DC and one host inside it:
 ```
 // Create simulation clock
 SimClock clock = new SimClock(TimeFrame.Sec);
 
 // Create new IaaS cloud with elastic load balancer based on First-Fit algorithm
-Cloud cloud = new IaaSCloud(1, clock, new ElasticityManagerFirstFitOptimistic(new AlwaysVmMigrationPolicy()));
+Cloud cloud = new IaaSCloud(1, clock, 
+	new ElasticityManagerFirstFitOptimistic(new AlwaysVmMigrationPolicy()));
 
 // attach new passive monitor with batch csv writer (batch size=1000)
-cloud.setMonitor(new PassiveMonitoringSystem(new CsvHistoryWriter("resources/cloud.csv", "out/dcs.csv", "out/pms.csv", "out/vms.csv", 1000, false)));
+cloud.setMonitor(new PassiveMonitoringSystem(
+	new CsvHistoryWriter("resources/cloud.csv", 
+						"out/dcs.csv", 
+						"out/pms.csv", 
+						"out/vms.csv", 1000, false)));
 
 // Create new datacenter (DC) in Oslo
 Datacenter dc = Datacenter.forLocation(1, clock, new Oslo());
 
-// Set model for cooling of cloud infrastructure that uses cold air for cooling when outside temperature is less than 10 degrees, mechanical cooling infrastructure if temperate is higher 18 degrees, or mixed cooling otherwise.
-dc.setCoolingModel(new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel()));
+// Set model for cooling of cloud infrastructure that uses cold air 
+// for cooling when outside temperature is less than 10 degrees, 
+// mechanical cooling infrastructure if temperate is higher 18 degrees, 
+// or mixed cooling otherwise.
+dc.setCoolingModel(
+	new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel()));
 
 // add one "HP ProLiant DL580 G3" to the DC
 Pm pm = new Pm(1, clock, new PmSpecPowerHpProLiantMl110G3PentiumD930());
@@ -29,7 +38,8 @@ pm.setSizeProvisioner(new GreedyProvisioner());
 pm.setBwProvisioner(new GreedyProvisioner());
 dc.addPm(pm);
 
-// Create new IaaS cloud scheduler that will schedule 2 VMs with characteristics of VM A1 from Microsoft Azure.
+// Create new IaaS cloud scheduler that will schedule 2 VMs 
+// with characteristics of VM A1 from Microsoft Azure.
 Scheduler scheduler = new IaaSScheduler(new VmGeneratorOnce(new VmSpecAzureA1(), 2));
 
 // Create new simulation engine 
