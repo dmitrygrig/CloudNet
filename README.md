@@ -4,7 +4,7 @@
 Cloudnet was designed and implemented on the basis of loose-coupling paradigms that assumes decoupling of different simulated components from each other and their communication through the Message-oriented middleware (MOM). The dependent components of the system interact with each other through interfaces that allows simple extension of almost each part of the framework and highly configurable possibilities that captures many simulation use cases.
 
 # Getting started
-The following listing represents use case of simulation of a IaaS cloud with one single DC and one host inside it:
+The following listing represents use case of simulation of an IaaS cloud with one single DC and one host inside it:
 ```java
 // Create simulation clock with granularity (simulation step) of 1 sec
 SimClock clock = new SimClock(TimeFrame.Sec);
