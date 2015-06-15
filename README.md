@@ -1,7 +1,7 @@
 # Overview
-**CloudNet** is a java framework which simulate a cloud infrastructure environment. It allows cloud providers to evaluate and text their infrastructure in a repeatable and controllable way, in order to find and avoid performance bottlenecks, evaluate different cloud management scenarios. The most important features which distinguish *CloudNet* from other cloud simulation frameworks are its ability to model distributed data centers under varying geo-temportam input parameters such as energy price, weather temprature, cooling models and price, workloadand computing, energy power outages. These parameters can be feed *CloudNet* by using real world traces. *CloudNet* also provider various energy price strategies under several SLA prioroity levels (Gold, Silver, Bronz) each with various penalty costs. 
+**CloudNet** is a java framework which simulate a cloud infrastructure environment. It allows cloud providers to evaluate and test their infrastructure in a repeatable and controllable way, in order to find and avoid performance bottlenecks, evaluate different cloud management scenarios. The most important features which distinguish *CloudNet* from other cloud simulation frameworks are its ability to model distributed data centers under varying geo-temporal input parameters such as energy price, weather temprature, cooling models and price, workload and computing, energy power outages. These parameters can be utilized in *CloudNet* by using real world traces. *CloudNet* also provides various energy price strategies under several SLA prioroity levels (Gold, Silver, Bronz) each with various penalty costs. 
 
-*CloudNet* was designed and implemented on the basis of loose-coupling paradigms that assumes decoupling of different simulated components from each other and their communication through a Message-oriented middleware (MOM). The dependent components of the system interact with each other through messaging which allows simple communication and it is highly configurable to support various simulation use cases.
+*CloudNet* was designed and implemented on the basis of loose-coupling paradigms that assumes decoupling of different simulated components from each other and their communication through a Message-oriented middleware (MOM). The dependent components of the system interact with each other through messaging which allows their simple communication.
 
 # Getting started
 The following listing represents use case of simulation of an IaaS cloud with one single DC and one PM inside it:
@@ -56,12 +56,12 @@ LOGGER.info("Total Costs: %.2f", cloud.getCosts());
 ``` 
 
 # Architecture
-The framework consists the following components: 
-* **Simulation core**: different implementations of simulation engines as well as simulation clock that shows the actual simulation time. The actual simulation time can be polled by any object but can only be set by the simulation engine which is responsible for aim.
-* **Cloud domain**: include all main cloud entities, models and interfaces.
+The framework consists of the following components: 
+* **Simulation core**: different implementations of simulation engines as well as simulation clock that shows the actual simulation time. The actual simulation time can be polled by any object but can only be set by the simulation engine which is responsible for that.
+* **Cloud domain**: includes cloud entities, models and interfaces.
 * **Physical models package**: implementation of various physical models (resource utilization, cooling, weather, power outages, energy prices, etc.) that are utilized during runtime of cloud infrastructure.
 * **MOM**: communication between different loose-coupled components.
-* **Monitoring**: it monitors and makes snaphots of cloud entity states and provides the output logging in different output formats for further analysis.
+* **Monitoring**: it monitors and makes snaphots of cloud entity states and provides the output logging into various formats for further analysis.
 * **Data-collecting utilities**: a set of utilities that are responsible for downloading and transformation of various weather data from different Web services.
 * **Locations**: a set of locations with pre-configured physical models based on real statistics.
 * **SLAs**: a set of cloud service Service level agreements (SLAs)
