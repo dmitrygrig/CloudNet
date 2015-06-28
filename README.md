@@ -6,33 +6,23 @@
 # Getting started
 The following listing represents use case of simulation of an IaaS cloud with one single DC and one PM inside it:
 ```java
-// Create simulation clock with granularity (simulation step) of 1 sec
-SimClock clock = new SimClock(TimeFrame.Sec);
+// Create clock
+SimClock clock = new SimClock(TimeFrame.Hour);
 
-// Create new IaaS cloud with elastic load balancer based on First-Fit algorithm
-Cloud cloud = new IaaSCloud(1, clock, 
-	new ElasticityManagerFirstFitOptimistic(new AlwaysVmMigrationPolicy()));
+// Create cloud
+Cloud cloud = new IaaSCloud(1, clock);
 
-// attach new passive monitor with batch csv writer (batch size=1000)
-cloud.setMonitor(new PassiveMonitoringSystem(
-	new CsvHistoryWriter("resources/cloud.csv", 
-						"out/dcs.csv", 
-						"out/pms.csv", 
-						"out/vms.csv", 1000, false)));
+// attack em
+cloud.attachPlugin(new ElasticityManagerInefficient());
 
-// Create new data center (DC) in Oslo
+// attach monitor
+cloud.attachPlugin(new PassiveMonitoringSystem(new CsvHistoryWriter("resources/cloud.csv", "out/dcs.csv", "out/pms.csv", "out/vms.csv", 1000, false)));
+
+// Create datacenter (DC)
 Datacenter dc = Datacenter.forLocation(1, clock, new Oslo());
+dc.setCoolingModel(new MixedCoolingModel(10.0, 18.0, new AirCoolingModel(), new MechanicalCoolingModel()));
 
-// Set model for cooling of the cloud infrastructure that uses cold air 
-// for cooling when outside temperature is less than 10 degrees, 
-// mechanical cooling infrastructure if temperate is higher than 18 degrees, 
-// or mixed cooling of both otherwise.
-dc.setCoolingModel(
-	new MixedCoolingModel(10.0, 18.0, 
-							new AirCoolingModel(), 
-							new MechanicalCoolingModel()));
-
-// add one "HP ProLiant DL580 G3" to the DC
+// add one PM to the DC
 Pm pm = new Pm(1, clock, new PmSpecPowerHpProLiantMl110G3PentiumD930());
 pm.setMipsProvisioner(new GreedyProvisioner());
 pm.setRamProvisioner(new GreedyProvisioner());
@@ -40,19 +30,19 @@ pm.setSizeProvisioner(new GreedyProvisioner());
 pm.setBwProvisioner(new GreedyProvisioner());
 dc.addPm(pm);
 
-// Create new IaaS cloud scheduler that schedules once 2 VMs 
-// with characteristics of VM A1 from Microsoft Azure.
+// add DC to the cloud
+cloud.addDatacenter(dc);
+
+// Create cloud simulator
 Scheduler scheduler = new IaaSScheduler(new VmGeneratorOnce(new VmSpecAzureA1(), 2));
+SimEngine engine = new SimEngineSimple(clock, scheduler, cloud, 10);
 
-// Create new simulation engine that will execute 3600 simulation steps
-SimEngine engine = new SimEngineSimple(clock, scheduler, cloud, 3600);
-
-// Perform simulations
+// Perform simulation
 engine.start();
 engine.stop();
 
 // print results
-LOGGER.info("Total Costs: %.2f", cloud.getCosts());
+LOGGER.info(String.format("Total Costs: %.2f", cloud.getCosts()));
 ``` 
 
 # Architecture
