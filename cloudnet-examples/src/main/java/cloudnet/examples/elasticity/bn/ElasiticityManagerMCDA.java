@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
-public class ElasiticityManagerMCDA implements ElasticityManager {
+public class ElasiticityManagerMCDA extends ElasticityManager {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasiticityManagerMCDA.class);
     
@@ -172,9 +172,9 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
                 runPmAndNotifyIfNecessary(cloud, targetPm);
                 cloud.getMessageBus().push(new VmAllocationMessage(vm, targetPm));
                 updatedAvailablePmResources(targetPm, vm, true);
-                LOGGER.info("%s was decided to allocate to %s.", vm.toShortString(), targetPm.toShortString());
+                LOGGER.info(String.format("%s was decided to allocate to %s.", vm.toShortString(), targetPm.toShortString()));
             } else {
-                LOGGER.warn("%s was not allocated to any pm.", vm.toShortString());
+                LOGGER.warn(String.format("%s was not allocated to any pm.", vm.toShortString()));
             }
         }
 
@@ -185,7 +185,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         Ensure.NotNull(vm, "vm");
         Ensure.IsNull(vm.getServer(), "Vm is already allocated.");
 
-        LOGGER.debug("Find target pm for allocation of %s...", vm.toString());
+        LOGGER.debug(String.format("Find target pm for allocation of %s...", vm.toString()));
 
         // submit parallel calculations of the most probable BN levels
         Map<Pm, Future<List<Integer>>> futureMap = new HashMap<>();
@@ -200,8 +200,8 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
     private boolean shouldVmBeMigrated(Cloud cloud, Vm vm) {
         final Pm targetPm = findTargetPmForMigration(cloud, vm);
         if (vm.getServer() != targetPm) {
-            LOGGER.trace("%s should be migrated from %s perhaps to %s.",
-                    vm.toShortString(), vm.getServer().toShortString(), targetPm.toShortString());
+            LOGGER.trace(String.format("%s should be migrated from %s perhaps to %s.",
+                    vm.toShortString(), vm.getServer().toShortString(), targetPm.toShortString()));
             return true;
         } else {
             return false;
@@ -214,7 +214,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         List<Vm> vmList = new ArrayList<>();
         for (Datacenter dc : cloud.getDatacenters()) {
             for (Pm pm : dc.getPms()) {
-                LOGGER.trace("Find list of vms that should be migrated from %s...", pm.toShortString());
+                LOGGER.trace(String.format("Find list of vms that should be migrated from %s...", pm.toShortString()));
                 for (Vm vm : pm.getVms()) {
                     if (migrationPolicy.shouldBeMigrated(vm) && shouldVmBeMigrated(cloud, vm)) {
                         vmList.add(vm);
@@ -233,7 +233,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
                 cloud.getMessageBus().push(new VmMigrationMessage(vm, targetPm));
                 updatedAvailablePmResources(targetPm, vm, true);
                 updatedAvailablePmResources(vm.getServer(), vm, false);
-                LOGGER.info("%s was decided to migrate to %s.", vm.toShortString(), targetPm.toShortString());
+                LOGGER.info(String.format("%s was decided to migrate to %s.", vm.toShortString(), targetPm.toShortString()));
             } else {
                 runPmAndNotifyIfNecessary(cloud, vm.getServer());
             }
@@ -246,7 +246,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         Ensure.NotNull(vm.getServer(), "vm.Server");
         Ensure.IsFalse(vm.isInMigration(), "During live migration vm cannot be migrated to another pm.");
 
-        LOGGER.debug("Find target pm for migration of %s allocated to %s...", vm.toString(), vm.getServer().toShortString());
+        LOGGER.debug(String.format("Find target pm for migration of %s allocated to %s...", vm.toString(), vm.getServer().toShortString()));
 
         // map parallel calculations of the most probable BN levels
         Map<Pm, Future<List<Integer>>> futureMap = new HashMap<>();
@@ -311,7 +311,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         Ensure.NotNull(vm, "vm");
 
         LOGGER.trace("-------------------------------------------");
-        LOGGER.trace("set evidences for %s and %s...", pm.toShortString(), vm.toShortString());
+        LOGGER.trace(String.format("set evidences for %s and %s...", pm.toShortString(), vm.toShortString()));
 
         // build network
         BayesNet network = getNetwork();
@@ -367,7 +367,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         final long vmSpecRam = vm.getSpec().getRam();
         final String vmNextRamSizeLevel = VmSizeLevel.getLevel(vmSpecRam);
         network.setEvidence(NodeName.VmRamSize, vmNextRamSizeLevel);
-        LOGGER.trace("vmSpecRam=%d,vmNextRamSizeLevel=%s", vmSpecRam, vmNextRamSizeLevel);
+        LOGGER.trace(String.format("vmSpecRam=%d,vmNextRamSizeLevel=%s", vmSpecRam, vmNextRamSizeLevel));
 
         network.setEvidence(NodeName.DatacenterBandwidth, BwLevel.Infini);
 
@@ -411,7 +411,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         BayesNet network = getNetwork();
 
         LOGGER.trace("-------------------------------------------");
-        LOGGER.trace("Compute utility for Pm %d...", pm.getId());
+        LOGGER.trace(String.format("Compute utility for Pm %d...", pm.getId()));
 
         // compute slaCummViolation utility
         String slaCummViolationLevel = network.getNodeByName(NodeName.VmCummAdjSlaViolationRate).getLevels().get(mostProbableLevels.get(0));
@@ -496,7 +496,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
                 migrTimeLevel,
                 otherViolationLevel));
 
-        LOGGER.debug("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f",
+        LOGGER.debug(String.format("%s\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f",
                 pm.toShortString(),
                 slaCummViolationUtility,
                 slaViolationUtility,
@@ -505,7 +505,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
                 otherViolationUtility,
                 pmCpuWorkloadUtility,
                 priceUtility,
-                utility);
+                utility));
 
         return utility;
     }
@@ -624,6 +624,7 @@ public class ElasiticityManagerMCDA implements ElasticityManager {
         BayesNet network = new BayesNet("pm");
 
         Node otherVmNextCpu = new Node(NodeName.OtherVmNextCpu, WorkloadLevel.All());
+        
         network.addNode(otherVmNextCpu);
 
         Node vmNextCpu = new Node(NodeName.VmNextCpu, WorkloadLevel.All());

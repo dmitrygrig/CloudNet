@@ -18,6 +18,7 @@
 package cloudnet.elasticity;
 
 import cloudnet.core.Cloud;
+import cloudnet.core.CloudEntityPlugin;
 
 /**
  * The utilization of cloud resources on which application component instances
@@ -29,14 +30,21 @@ import cloudnet.core.Cloud;
  *
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
-public interface ElasticityManager {
+public abstract class ElasticityManager implements CloudEntityPlugin<Cloud> {
 
-    /**
-     * Generates a list of actions that should be performed under the specified
-     * cloud and pushes them into the cloud message bus.
-     *
-     * @param cloud
-     */
-    void manage(Cloud cloud);
+    public abstract void manage(Cloud cloud);
+    
+    @Override
+    public void executeBeforeExecution(Cloud entity) {
+        manage(entity);
+    }
+
+    @Override
+    public void executeAfterExecution(Cloud entity) {
+    }
+    
+    @Override
+    public void release(){
+    }
 
 }

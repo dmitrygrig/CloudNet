@@ -134,20 +134,20 @@ public class VmGeneratorVariousVmsOnce implements VmGenerator {
             for (int i = 0; i < idleVmNumber; i++) {
                 VmAvailabilityBasedSla sla = createSla(SlaLevel.Bronze);
                 Vm vm = createIdleVm(counter++, clock, sla);
-                LOGGER.info("Idle %s was generated.", vm);
+                LOGGER.info(String.format("Idle %s was generated.", vm));
                 vms.add(vm);
             }
             for (int i = 0; i < webVmNumber; i++) {
                 VmAvailabilityBasedSla sla = createSla(SlaLevel.Bronze);
                 Vm vm = createWebVm(counter++, clock, sla);
-                LOGGER.info("Web %s was generated.", vm);
+                LOGGER.info(String.format("Web %s was generated.", vm));
                 vms.add(vm);
             }
 
             for (int i = 0; i < hpcVmNumber; i++) {
                 VmAvailabilityBasedSla sla = createSla(SlaLevel.Bronze);
                 Vm vm = createHPCVm(counter++, clock, sla);
-                LOGGER.info("HPC %s was generated.", vm);
+                LOGGER.info(String.format("HPC %s was generated.", vm));
                 vms.add(vm);
             }
 

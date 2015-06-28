@@ -58,7 +58,7 @@ public class FormatConverter {
                 continue;
             }
 
-            LOGGER.trace("Processing %s...", cityDir.getAbsolutePath());
+            LOGGER.trace(String.format("Processing %s...", cityDir.getAbsolutePath()));
 
             String[] extensions = {"json"};
 

@@ -31,24 +31,36 @@ public class Locations {
     private Locations() {
 
     }
+    
+    public static void registerDefault(){
+        register(new Oslo());
+        register(new Vienna());
+        register(new Toronto());
+        register(new Tokyo());
+        register(new RioDeJaneiro());
+    }
+    
+    static {
+        registerDefault();
+    }
 
-    public static synchronized List<Location> get() {
+    public static List<Location> get() {
         return new ArrayList<>(locations);
     }
 
-    public static synchronized Location byCity(String city) {
-        return locations.parallelStream().filter(l -> l.getCity().equalsIgnoreCase(city)).findFirst().get();
+    public static Location byCity(String city) {
+        return locations.stream().filter(l -> l.getCity().equalsIgnoreCase(city)).findFirst().get();
     }
 
-    public static synchronized Location byCountry(String country) {
-        return locations.parallelStream().filter(l -> l.getCountry().equalsIgnoreCase(country)).findFirst().get();
+    public static Location byCountry(String country) {
+        return locations.stream().filter(l -> l.getCountry().equalsIgnoreCase(country)).findFirst().get();
     }
 
-    public static synchronized void register(Location location) {
+    public static void register(Location location) {
         locations.add(location);
     }
 
-    public static synchronized void unregister(Location location) {
+    public static void unregister(Location location) {
         locations.remove(location);
     }
 

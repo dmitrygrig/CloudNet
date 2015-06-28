@@ -48,7 +48,7 @@ public class RealTemperatureModel implements TemperatureModel {
 
     private void readData(String filename) {
         boolean isHeader = true;
-        LOGGER.trace("Reading temperature for location %s from %s...", location, filename);
+        LOGGER.trace(String.format("Reading temperature for location %s from %s...", location, filename));
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             for (String line; (line = br.readLine()) != null;) {
                 if (isHeader) {
@@ -70,7 +70,7 @@ public class RealTemperatureModel implements TemperatureModel {
 
     @Override
     public double getTemperature(long timestamp) {
-        LOGGER.trace("Get temperature in %s at %s UTC", location, DateTimeUtils.getDateTime(timestamp, "UTC"));
+        LOGGER.trace(String.format("Get temperature in %s at %s UTC", location, DateTimeUtils.getDateTime(timestamp, "UTC")));
         Double value = data.get(timestamp);
 
         if (value != null) {

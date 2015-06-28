@@ -15,20 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cloudnet.core;
+package cloudnet.monitoring;
+
+import cloudnet.core.Cloud;
+import cloudnet.core.CloudEntityPlugin;
 
 /**
  * Monitors a cloud.
  *
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
-public interface MonitoringSystem {
-
-    /**
-     * 
-     * @param cloud 
-     */
-    void monitor(Cloud cloud);
+public abstract class MonitoringSystem implements CloudEntityPlugin<Cloud> {
     
-    void shutdown();
+    @Override
+    public void executeBeforeExecution(Cloud entity) {
+    }
+
+    @Override
+    public void executeAfterExecution(Cloud entity) {
+        monitor(entity);
+    }
+    
+    @Override
+    public void release() {
+    }
+    
+    public abstract void monitor(Cloud cloud);
+    
 }

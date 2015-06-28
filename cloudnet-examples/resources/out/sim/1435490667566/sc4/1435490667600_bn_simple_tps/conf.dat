@@ -1,0 +1,15 @@
+em=bn
+migrPolicy=simple
+predStrategy=tps
+from=2013-01-01 01:00:00
+till=2013-02-01 01:00:00
+dcNum=5
+vmNum=25
+pmPerDcNum=5
+simStep=3600000
+vmSpec=VmSpecAzureA0{}
+hasPowerOutage=true
+cpuWorkloadModel=PeriodicWorkloadModel{lowerThreshold='0.1', upperThreshold='0.8', period='86400000', deviation='0.05', random='java.util.Random@27f8302d'}
+bwWorkloadModel=StaticWorkloadModel{baseWorkload='0.5', deviation='0.05', random='java.util.Random@2d8e6db6'}
+ramWorkloadModel=PeriodicWorkloadModel{lowerThreshold='0.1', upperThreshold='0.6', period='86400000', deviation='0.05', random='java.util.Random@23ab930d'}
+sizeWorkloadModel=ContinuouslyChangingWorkloadModel{startValue='0.2', finishValue='0.8', changeValue='0.01', period='86400000', startOfChangeTime='0'}

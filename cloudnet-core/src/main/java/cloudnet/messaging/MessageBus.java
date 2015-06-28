@@ -49,7 +49,7 @@ public class MessageBus {
     public void push(Message message) {
         Ensure.NotNull(message, "message");
         messages.add(message);
-        LOGGER.trace("%s was pushed into the message bus.", message);
+        LOGGER.trace(String.format("%s was pushed into the message bus.", message));
     }
 
     public <T extends Message> List<T> getMessagesByType(Class<T> clazz) {
@@ -69,7 +69,7 @@ public class MessageBus {
     public void remove(Message message) {
         Ensure.NotNull(message, "message");
         messages.remove(message);
-        LOGGER.trace("%s was removed from the message bus.", message);
+        LOGGER.trace(String.format("%s was removed from the message bus.", message));
     }
 
     public void clear() {

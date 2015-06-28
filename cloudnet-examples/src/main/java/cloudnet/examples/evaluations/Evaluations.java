@@ -18,6 +18,12 @@
 package cloudnet.examples.evaluations;
 
 import cloudnet.elasticity.AlwaysVmMigrationPolicy;
+import cloudnet.locations.Locations;
+import cloudnet.locations.Oslo;
+import cloudnet.locations.RioDeJaneiro;
+import cloudnet.locations.Tokyo;
+import cloudnet.locations.Toronto;
+import cloudnet.locations.Vienna;
 import cloudnet.workloads.prediction.PessimisticSimplePredictionStrategy;
 import cloudnet.workloads.prediction.SimplePredictionStrategy;
 import cloudnet.workloads.prediction.SimpleRegressionPredictionStrategy;
@@ -33,6 +39,7 @@ public class Evaluations {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
         Scenario sc = Scenario.createScenario4(ScenarioEvaluator.EM_UE, new AlwaysVmMigrationPolicy(), null);
         sc.setVmNum(25);
         sc.setPmPerDcNum(5);
@@ -63,9 +70,9 @@ public class Evaluations {
 //                Scenario.createScenario3(ScenarioEvaluator.EM_BN, new AlwaysVmMigrationPolicy(), new TrendPredictionStrategy()),
 //                Scenario.createScenario3(ScenarioEvaluator.EM_BN, new AlwaysVmMigrationPolicy(), new SimpleRegressionPredictionStrategy()),
                 // sc4
-                Scenario.createScenario4(ScenarioEvaluator.EM_UE, new AlwaysVmMigrationPolicy(), null),
-                Scenario.createScenario4(ScenarioEvaluator.EM_FFP, new AlwaysVmMigrationPolicy(), null),
-                Scenario.createScenario4(ScenarioEvaluator.EM_FFO, new AlwaysVmMigrationPolicy(), null),
+//                Scenario.createScenario4(ScenarioEvaluator.EM_UE, new AlwaysVmMigrationPolicy(), null),
+//                Scenario.createScenario4(ScenarioEvaluator.EM_FFP, new AlwaysVmMigrationPolicy(), null),
+//                Scenario.createScenario4(ScenarioEvaluator.EM_FFO, new AlwaysVmMigrationPolicy(), null),
                 Scenario.createScenario4(ScenarioEvaluator.EM_BN, new AlwaysVmMigrationPolicy(), new TrendPredictionStrategy()),
                 Scenario.createScenario4(ScenarioEvaluator.EM_BN, new AlwaysVmMigrationPolicy(), new SimplePredictionStrategy()),
                 Scenario.createScenario4(ScenarioEvaluator.EM_BN, new AlwaysVmMigrationPolicy(), new PessimisticSimplePredictionStrategy()),               

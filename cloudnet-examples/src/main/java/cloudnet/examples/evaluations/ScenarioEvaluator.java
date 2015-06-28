@@ -23,7 +23,6 @@ import cloudnet.cooling.MechanicalCoolingModel;
 import cloudnet.cooling.MixedCoolingModel;
 import cloudnet.core.Cloud;
 import cloudnet.core.Datacenter;
-import cloudnet.core.MonitoringSystem;
 import cloudnet.core.Pm;
 import cloudnet.core.TimeFrame;
 import cloudnet.elasticity.ElasticityManager;
@@ -143,17 +142,19 @@ public class ScenarioEvaluator {
         }
 
         // Create cloud
-        Cloud cloud = new IaaSCloud(1, clock, elasticityManager);
+        Cloud cloud = new IaaSCloud(1, clock);
+        
+        // attach em
+        cloud.attachPlugin(elasticityManager);
 
         // Attach monitor
-        MonitoringSystem monitor = new PassiveMonitoringSystem(new CsvHistoryWriter(
+        cloud.attachPlugin(new PassiveMonitoringSystem(new CsvHistoryWriter(
                 outDir + "cloud.csv",
                 outDir + "dcs.csv",
                 outDir + "pms.csv",
                 outDir + "vms.csv",
                 1000,
-                false));
-        cloud.setMonitor(monitor);
+                false)));
 
         // Create datacenters
         List<Datacenter> datacenters = getDatacenters(clock, sc.isHasPowerOutage(), sc.getPmPerDcNum());
@@ -181,9 +182,6 @@ public class ScenarioEvaluator {
         // Perform simulation
         engine.start();
         engine.stop();
-
-        // shutdown monitor in order to flush it
-        monitor.shutdown();
 
         // print results
         LOGGER.info(String.format("Violations: %d/%d", cloud.getViolationCount(), sc.getVmNum() * engine.getElapsedSteps()));

@@ -95,7 +95,7 @@ public class Pm extends CloudEntity {
     }
 
     public void setPmState(PmState pmState) {
-        LOGGER.info("Pm %d new state:%s", getId(), pmState.toString());
+        LOGGER.info(String.format("Pm %d new state:%s", getId(), pmState.toString()));
         this.pmState = pmState;
     }
 
@@ -387,7 +387,7 @@ public class Pm extends CloudEntity {
         Ensure.NotNull(vm, "vm");
         Ensure.AreNotEquals(pmState, PmState.PowerOff, "pmState");
         getVms().add(vm);
-        LOGGER.info("Vm %d was allocated to Pm %d", vm.getId(), this.getId());
+        LOGGER.info(String.format("Vm %d was allocated to Pm %d", vm.getId(), this.getId()));
     }
 
     public void beginVmMigration(Vm vm) {
@@ -412,7 +412,7 @@ public class Pm extends CloudEntity {
             Vm vm = getVms().iterator().next();
             vm.deallocate();
         }
-        LOGGER.info("Pm %d released resources.", this.getId());
+        LOGGER.info(String.format("Pm %d released resources.", this.getId()));
 
     }
 
@@ -421,7 +421,7 @@ public class Pm extends CloudEntity {
 
         // deallocate all vms
         if (!getVms().isEmpty()) {
-            LOGGER.warn("%s is powered off, but it still has vms allocated on it.", this);
+            LOGGER.warn(String.format("%s is powered off, but it still has vms allocated on it.", this));
             deallocateAllVms();
         }
 
@@ -515,7 +515,7 @@ public class Pm extends CloudEntity {
         }
 
         double workload = (double) (getConsumedMips()) / getSpec().getMips();
-        LOGGER.trace("Pm %d cpu workload is %.2f.", this.getId(), workload);
+        LOGGER.trace(String.format("Pm %d cpu workload is %.2f.", this.getId(), workload));
         double power = getSpec().getPower(workload) / 1000.0;
         return power;
     }
@@ -531,7 +531,7 @@ public class Pm extends CloudEntity {
     @Deprecated
     public double getUtilizedPower(long timestamp) {
         double workload = (double) (getConsumedMips(timestamp)) / getSpec().getMips();
-        LOGGER.trace("Pm %d cpu workload is %.2f.", this.getId(), workload);
+        LOGGER.trace(String.format("Pm %d cpu workload is %.2f.", this.getId(), workload));
         double power = getSpec().getPower(workload) / 1000.0;
         return power;
     }

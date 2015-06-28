@@ -18,8 +18,10 @@
 package cloudnet.examples.elasticity.bn;
 
 import cloudnet.core.Size;
+import cloudnet.locations.Locations;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -27,7 +29,10 @@ import static org.junit.Assert.*;
  */
 public class DistrHelperTest {
 
-    public DistrHelperTest() {
+    @BeforeClass
+    public static void setUpClass() {
+        Locations.registerDefault();
+        DistrHelper.init();
     }
 
     private void testForNullValues(Object[] arr) {

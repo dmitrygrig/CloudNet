@@ -322,7 +322,7 @@ public class Vm extends CloudEntity {
             throw new IllegalStateException(String.format("Vm %d was already allocated to Pm %d", this.getId(), getServer().getId()));
         }
 
-        LOGGER.trace("Vm %d is being allocated to Pm %d.", this.getId(), server.getId());
+        LOGGER.trace(String.format("Vm %d is being allocated to Pm %d.", this.getId(), server.getId()));
 
         server.allocateVm(this);
         setServer(server);
@@ -339,7 +339,7 @@ public class Vm extends CloudEntity {
             throw new IllegalStateException(String.format("Vm %d has not been allocated yet", this.getId()));
         }
 
-        LOGGER.trace("Immediate migration of Vm %d from Pm %d to Pm %d.", this.getId(), getServer().getId(), migrateToServer.getId());
+        LOGGER.trace(String.format("Immediate migration of Vm %d from Pm %d to Pm %d.", this.getId(), getServer().getId(), migrateToServer.getId()));
 
         getServer().deallocateVm(this);
         migrateToServer.allocateVm(this);
@@ -356,15 +356,15 @@ public class Vm extends CloudEntity {
             throw new IllegalStateException(String.format("Migration of Vm %d has already been started.", this.getId()));
         }
 
-        LOGGER.info("Continious migration of Vm %d from Pm %d to Pm %d is started.",
-                this.getId(), getServer().getId(), migrateToServer.getId());
+        LOGGER.info(String.format("Continious migration of Vm %d from Pm %d to Pm %d is started.",
+                this.getId(), getServer().getId(), migrateToServer.getId()));
 
         migrateToServer.beginVmMigration(this);
         setMigratedToServer(migrateToServer);
         long requestedRam = getRequestedRam();
         migratedSize = (long) (requestedRam * PageDirtyRate.getRate(requestedRam / (double) getSpec().getRam()));
 
-        LOGGER.trace("Estimated migrated size for %s is %d.", this.toString(), migratedSize);
+        LOGGER.trace(String.format("Estimated migrated size for %s is %d.", this.toString(), migratedSize));
 
         Ensure.GreaterThan(migratedSize, 0, "migratedSize");
     }
@@ -374,8 +374,8 @@ public class Vm extends CloudEntity {
             throw new IllegalStateException(String.format("Migration of Vm %d has not been started.", this.getId()));
         }
 
-        LOGGER.info("Continious migration of Vm %d from Pm %d to Pm %d is finished.",
-                this.getId(), getServer().getId(), getMigratedToServer().getId());
+        LOGGER.info(String.format("Continious migration of Vm %d from Pm %d to Pm %d is finished.",
+                this.getId(), getServer().getId(), getMigratedToServer().getId()));
 
         deallocate();
         getMigratedToServer().finishVmMigration(this);
@@ -389,7 +389,7 @@ public class Vm extends CloudEntity {
             throw new IllegalStateException(String.format("Vm %d has not been allocated yet", this.getId()));
         }
 
-        LOGGER.trace("Vm %d is being deallocated from Pm %d.", this.getId(), getServer().getId());
+        LOGGER.trace(String.format("Vm %d is being deallocated from Pm %d.", this.getId(), getServer().getId()));
 
         getServer().deallocateVm(this);
         setServer(null);
@@ -522,8 +522,8 @@ public class Vm extends CloudEntity {
         long requested = getRequestedMips();
         long provisioned = getProvisionedMips();
         if (requested > provisioned) {
-            LOGGER.warn("There is not enough mips for %s, requested=%d,provisioned=%d",
-                    this.toShortString(), requested, provisioned);
+            LOGGER.warn(String.format("There is not enough mips for %s, requested=%d,provisioned=%d",
+                    this.toShortString(), requested, provisioned));
             result = false;
         }
 
@@ -561,8 +561,8 @@ public class Vm extends CloudEntity {
 //            this.inShortDowntime = true;
 //            this.cummulativeDowntime += getClock().diff();
         } else if (!isEnoughResources()) {
-            LOGGER.warn("%s is allocated on %s, but there is not enough resources for execution that results in downtime.",
-                    toShortString(), getServer().toShortString());
+            LOGGER.warn(String.format("%s is allocated on %s, but there is not enough resources for execution that results in downtime.",
+                    toShortString(), getServer().toShortString()));
             setInDowntime(true);
 //            this.cummulativeDowntime += getClock().diff();
 //            this.inShortDowntime = true;

@@ -18,8 +18,8 @@
 package cloudnet.monitoring;
 
 import cloudnet.core.Cloud;
+import cloudnet.core.CloudEntity;
 import cloudnet.core.Datacenter;
-import cloudnet.core.MonitoringSystem;
 import cloudnet.core.Pm;
 import cloudnet.core.PmState;
 import cloudnet.core.Vm;
@@ -35,7 +35,7 @@ import cloudnet.util.Ensure;
  *
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
-public class PassiveMonitoringSystem implements MonitoringSystem {
+public class PassiveMonitoringSystem extends MonitoringSystem {
 
     protected final HistoryWriter writer;
 
@@ -189,7 +189,7 @@ public class PassiveMonitoringSystem implements MonitoringSystem {
     }
 
     @Override
-    public void shutdown() {
+    public void release() {
         writer.flush();
     }
 

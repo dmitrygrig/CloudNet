@@ -23,5 +23,7 @@ package cloudnet.sim;
  */
 public interface Simulated {
 
-    void simulateExecution();
+    public void simulateExecution();
+    
+    public void stopExecution();
 }

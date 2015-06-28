@@ -52,7 +52,7 @@ public class SimEngineSimple implements SimEngine {
 
         for (long i = 0; i < stepCount; i++) {
 
-            LOGGER.info("Step %d...", i);
+            LOGGER.info(String.format("Step %d...", i));
 
             long currentTime = System.currentTimeMillis();
 
@@ -68,8 +68,8 @@ public class SimEngineSimple implements SimEngine {
             // save current value for clock
             clock.sync();
 
-            LOGGER.info("Consumed time for step: %d ms",
-                    System.currentTimeMillis() - currentTime);
+            LOGGER.info(String.format("Consumed time for step: %d ms",
+                    System.currentTimeMillis() - currentTime));
 
             // Force GC
             System.gc();
@@ -80,8 +80,9 @@ public class SimEngineSimple implements SimEngine {
 
     @Override
     public void stop() {
-        LOGGER.info("Simulation stopeped. Consumed time: %d sec",
-                (System.currentTimeMillis() - simStart) / 1000L);
+        cloud.stopExecution();
+        LOGGER.info(String.format("Simulation stopeped. Consumed time: %d sec",
+                (System.currentTimeMillis() - simStart) / 1000L));
     }
 
     @Override

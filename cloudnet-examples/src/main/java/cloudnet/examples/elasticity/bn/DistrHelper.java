@@ -65,26 +65,33 @@ public class DistrHelper {
         return PowerOutageDurationDistr;
     }
 
-    private static final long MaxSlaViolationTime = (long) (0.001 * TimeFrame.Month); // 99.9% / per month
-    private static final Integer[] TwoWorkloadsSumDistribution;
-    private static final Integer[] TwoWorkloadsAndDistribution;
-    private static final Double[] MigrationTimeDistribution;
-    private static final Integer[] VmDowntimeDistribution;
-    private static final Integer[] WorkloadToOverusageDistribution;
-    private static final Integer[] WorkloadToDirtyPageDistr;
-    private static final Double[] PowerOutageDistr;
-    private static final Double[] PowerOutageDurationDistr;
+    private static long MaxSlaViolationTime = (long) (0.001 * TimeFrame.Month); // 99.9% / per month
+    private static Integer[] TwoWorkloadsSumDistribution;
+    private static Integer[] TwoWorkloadsAndDistribution;
+    private static Double[] MigrationTimeDistribution;
+    private static Integer[] VmDowntimeDistribution;
+    private static Integer[] WorkloadToOverusageDistribution;
+    private static Integer[] WorkloadToDirtyPageDistr;
+    private static Double[] PowerOutageDistr;
+    private static Double[] PowerOutageDurationDistr;
+    private static boolean initialized;
+
+    public static void init() {
+        if (!initialized) {
+            TwoWorkloadsSumDistribution = getTwoWorkloadsSumDistribution(
+                    WorkloadLevel.All().length, WorkloadLevel.All().length, WorkloadLevel.AllWithOverusage().length);
+            TwoWorkloadsAndDistribution = getTwoWorkloadsAndDistribution();
+            MigrationTimeDistribution = getMigrationTimeDistr();
+            VmDowntimeDistribution = getVmDowntimeDistribution();
+            WorkloadToOverusageDistribution = getWorkloadToOverusageDistribution();
+            WorkloadToDirtyPageDistr = getWorkloadToDirtyPageDistr();
+            PowerOutageDistr = getPowerOutageDistr();
+            PowerOutageDurationDistr = getPowerOutageDurationDistr();
+        }
+    }
 
     static {
-        TwoWorkloadsSumDistribution = getTwoWorkloadsSumDistribution(
-                WorkloadLevel.All().length, WorkloadLevel.All().length, WorkloadLevel.AllWithOverusage().length);
-        TwoWorkloadsAndDistribution = getTwoWorkloadsAndDistribution();
-        MigrationTimeDistribution = getMigrationTimeDistr();
-        VmDowntimeDistribution = getVmDowntimeDistribution();
-        WorkloadToOverusageDistribution = getWorkloadToOverusageDistribution();
-        WorkloadToDirtyPageDistr = getWorkloadToDirtyPageDistr();
-        PowerOutageDistr = getPowerOutageDistr();
-        PowerOutageDurationDistr = getPowerOutageDurationDistr();
+        init();
     }
 
     public static Integer[] getTwoWorkloadsSumDistribution(int src1Levels, int src2Levels, int targetLevels) {

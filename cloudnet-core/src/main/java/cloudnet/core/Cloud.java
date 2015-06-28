@@ -17,7 +17,6 @@
  */
 package cloudnet.core;
 
-import cloudnet.elasticity.ElasticityManager;
 import cloudnet.messaging.MessageBus;
 import cloudnet.sim.SimClock;
 import cloudnet.util.Ensure;
@@ -37,19 +36,16 @@ import java.util.List;
  */
 public abstract class Cloud extends CloudEntity {
 
-    protected final ElasticityManager em;
     protected List<Datacenter> datacenters;
     protected double slaPenaltyCosts = 0.0;
     protected long violationCount;
     protected long shortViolationCount;
     protected long vmMigrationCount;
-    protected MonitoringSystem monitor;
 
     protected final MessageBus messageBus = new MessageBus();
 
-    public Cloud(int id, SimClock clock, ElasticityManager em) {
+    public Cloud(int id, SimClock clock) {
         super(id, clock);
-        this.em = em;
     }
 
     public List<Datacenter> getDatacenters() {
@@ -60,26 +56,14 @@ public abstract class Cloud extends CloudEntity {
         this.datacenters = datacenters;
     }
 
-    public MonitoringSystem getMonitor() {
-        return monitor;
-    }
-
-    public void setMonitor(MonitoringSystem monitor) {
-        this.monitor = monitor;
-    }
-
-    public MessageBus getMessageBus() {
-        return messageBus;
-    }
-
-    public Datacenter findDatacenterById(int id) {
-        return getDatacenters().stream().filter(dc -> dc.getId() == id).findFirst().get();
-    }
-
     public void addDatacenter(Datacenter dc) {
         Ensure.NotNull(dc, "dc");
         dc.setCloud(this);
         getDatacenters().add(dc);
+    }
+
+    public MessageBus getMessageBus() {
+        return messageBus;
     }
 
     public double getCosts() {
@@ -119,11 +103,6 @@ public abstract class Cloud extends CloudEntity {
     @Override
     public void simulateExecutionWork() {
 
-        // manage
-        if (em != null) {
-            em.manage(this);
-        }
-
         // make changes
         performChanges();
 
@@ -142,10 +121,6 @@ public abstract class Cloud extends CloudEntity {
         computeEnergyCostsForLastStep();
         computeOverallSlaCosts();
         computeViolationCount();
-
-        if (monitor != null) {
-            monitor.monitor(this);
-        }
     }
 
     /**

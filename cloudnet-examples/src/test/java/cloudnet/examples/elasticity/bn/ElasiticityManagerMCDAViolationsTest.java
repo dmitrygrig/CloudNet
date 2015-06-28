@@ -17,7 +17,6 @@
  */
 package cloudnet.examples.elasticity.bn;
 
-
 import cloudnet.cooling.CoolingModel;
 import cloudnet.core.Cloud;
 import cloudnet.core.Datacenter;
@@ -32,8 +31,12 @@ import cloudnet.iaas.IaaSCloud;
 import cloudnet.iaas.VmGenerator;
 import cloudnet.iaas.VmGeneratorOnce;
 import cloudnet.locations.Location;
+import cloudnet.locations.Locations;
 import cloudnet.locations.Oslo;
+import cloudnet.locations.RioDeJaneiro;
+import cloudnet.locations.Tokyo;
 import cloudnet.locations.Toronto;
+import cloudnet.locations.Vienna;
 import cloudnet.messaging.PmStartMessage;
 import cloudnet.messaging.VmMigrationMessage;
 import cloudnet.provisioners.GreedyProvisioner;
@@ -59,7 +62,7 @@ import static org.mockito.Matchers.anyDouble;
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
 public class ElasiticityManagerMCDAViolationsTest {
-    
+
     private static R r;
 
     @BeforeClass
@@ -74,7 +77,7 @@ public class ElasiticityManagerMCDAViolationsTest {
 
     private Cloud getTestCloud(SimClock clock, ElasticityManager em) {
         PmSpec pmSpec = mock(PmSpec.class);
-        when(pmSpec.getMips()).thenReturn(4000L);
+        when(pmSpec.getMips()).thenReturn(2000L);
         when(pmSpec.getBw()).thenReturn(Size.GBit);
         when(pmSpec.getRam()).thenReturn(4 * Size.GB);
         when(pmSpec.getSize()).thenReturn(100 * Size.GB);
@@ -82,7 +85,8 @@ public class ElasiticityManagerMCDAViolationsTest {
         CoolingModel cm = mock(CoolingModel.class);
         when(cm.getpPUE(anyDouble())).thenReturn(1.05);
 
-        Cloud cloud = new IaaSCloud(1, clock, em);
+        Cloud cloud = new IaaSCloud(1, clock);
+        cloud.attachPlugin(em);
         // cheaper dc at nicht
         Datacenter dc1 = createDatacenter(1, clock, new Oslo(), cm);
         // more expensive dc at night
@@ -153,10 +157,14 @@ public class ElasiticityManagerMCDAViolationsTest {
     public void testManageMigrations() {
         System.out.println("manage");
 
+        /**
+         * The test checks that elasticity manager will migrate from one DC to
+         * another one.
+         */
         SimClock clock = new SimClock();
         WorkloadPredictionStrategy str = mock(WorkloadPredictionStrategy.class);
         when(str.predictValue(anyLong(), anyLong(), any())).thenReturn(0L);
-        
+
         VmMigrationPolicy migrPolicy = mock(VmMigrationPolicy.class);
         when(migrPolicy.shouldBeMigrated(any())).thenReturn(Boolean.TRUE);
 
@@ -164,9 +172,10 @@ public class ElasiticityManagerMCDAViolationsTest {
         instance.setR(r);
 
         Cloud cloud = getTestCloud(clock, instance);
+
         VmGenerator vmGenerator = new VmGeneratorOnce(getVmSpec(), 3);
         List<Vm> vms = vmGenerator.generate(clock);
-        Pm pm = cloud.findDatacenterById(2).getPms().iterator().next();
+        Pm pm = findDatacenterById(cloud, 2).getPms().iterator().next();
         pm.run();
         for (Vm vm : vms) {
             vm.allocateTo(pm);
@@ -178,7 +187,11 @@ public class ElasiticityManagerMCDAViolationsTest {
 
         // migration of three vms should be scheduled to another dc
         assertEquals(1, cloud.getMessageBus().getMessagesByType(PmStartMessage.class).size());
-        assertEquals(3, cloud.getMessageBus().getMessagesByType(VmMigrationMessage.class).size());
+        assertEquals(2, cloud.getMessageBus().getMessagesByType(VmMigrationMessage.class).size());
+    }
+
+    private static Datacenter findDatacenterById(Cloud cloud, int id) {
+        return cloud.getDatacenters().stream().filter(dc -> dc.getId() == id).findFirst().get();
     }
 
 }

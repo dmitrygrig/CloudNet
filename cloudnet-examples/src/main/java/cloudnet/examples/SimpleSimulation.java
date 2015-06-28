@@ -18,7 +18,6 @@
 package cloudnet.examples;
 
 import cloudnet.cooling.AirCoolingModel;
-import cloudnet.cooling.CoolingModel;
 import cloudnet.cooling.MechanicalCoolingModel;
 import cloudnet.cooling.MixedCoolingModel;
 import cloudnet.core.Cloud;
@@ -26,9 +25,6 @@ import cloudnet.core.Datacenter;
 import cloudnet.iaas.IaaSCloud;
 import cloudnet.core.Pm;
 import cloudnet.core.TimeFrame;
-import cloudnet.elasticity.AlwaysVmMigrationPolicy;
-import cloudnet.elasticity.ElasticityManagerFirstFitOptimistic;
-import cloudnet.elasticity.ElasticityManagerFirstFitPesimistic;
 import cloudnet.elasticity.ElasticityManagerInefficient;
 import cloudnet.sim.SimEngine;
 import cloudnet.sim.SimEngineSimple;
@@ -36,12 +32,7 @@ import cloudnet.pm.PmSpecPowerHpProLiantMl110G3PentiumD930;
 import cloudnet.iaas.IaaSScheduler;
 import cloudnet.sim.Scheduler;
 import cloudnet.iaas.VmGeneratorOnce;
-import cloudnet.locations.Location;
 import cloudnet.locations.Oslo;
-import cloudnet.locations.RioDeJaneiro;
-import cloudnet.locations.Tokyo;
-import cloudnet.locations.Toronto;
-import cloudnet.locations.Vienna;
 import cloudnet.monitoring.CsvHistoryWriter;
 import cloudnet.monitoring.PassiveMonitoringSystem;
 import cloudnet.provisioners.GreedyProvisioner;
@@ -65,13 +56,16 @@ public class SimpleSimulation {
     public static void main(String[] args) {
 
         // Create clock
-        SimClock clock = new SimClock(TimeFrame.Sec);
+        SimClock clock = new SimClock(TimeFrame.Hour);
 
         // Create cloud
-        Cloud cloud = new IaaSCloud(1, clock, new ElasticityManagerInefficient());
+        Cloud cloud = new IaaSCloud(1, clock);
+        
+        // attack em
+        cloud.attachPlugin(new ElasticityManagerInefficient());
         
         // attach monitor
-        cloud.setMonitor(new PassiveMonitoringSystem(new CsvHistoryWriter("resources/cloud.csv", "out/dcs.csv", "out/pms.csv", "out/vms.csv", 1000, false)));
+        cloud.attachPlugin(new PassiveMonitoringSystem(new CsvHistoryWriter("resources/cloud.csv", "out/dcs.csv", "out/pms.csv", "out/vms.csv", 1000, false)));
 
         // Create datacenter (DC)
         Datacenter dc = Datacenter.forLocation(1, clock, new Oslo());
@@ -84,49 +78,19 @@ public class SimpleSimulation {
         pm.setSizeProvisioner(new GreedyProvisioner());
         pm.setBwProvisioner(new GreedyProvisioner());
         dc.addPm(pm);
+        
+        // add DC to the cloud
+        cloud.addDatacenter(dc);
 
         // Create cloud simulator
         Scheduler scheduler = new IaaSScheduler(new VmGeneratorOnce(new VmSpecAzureA1(), 2));
-        SimEngine engine = new SimEngineSimple(clock, scheduler, cloud, 3600);
+        SimEngine engine = new SimEngineSimple(clock, scheduler, cloud, 10);
 
         // Perform simulation
         engine.start();
         engine.stop();
 
         // print results
-        LOGGER.info("Total Costs: %.2f", cloud.getCosts());
-
-        // exit in order to stop R-Environment if it is used.
-        System.exit(0);
-    }
-
-    private static int pmIdCounter = 1;
-    private static int dcIdCounter = 1;
-
-    private static Datacenter createDatacenter(SimClock clock, Location location, CoolingModel model) {
-        Datacenter dc = Datacenter.forLocation(dcIdCounter, clock, location);
-        dc.setCoolingModel(model);
-        createPmsForDc(dc, clock);
-        dcIdCounter++;
-        LOGGER.trace("%s created in %s.", dc, location.getDescription());
-        return dc;
-    }
-
-    private static void createPmsForDc(Datacenter dc, SimClock clock) {
-        for (int i = 0; i < 5; i++) {
-            Pm pm = createDefaultPm(pmIdCounter, clock);
-            dc.addPm(pm);
-            LOGGER.trace("%s created for %s.", pm, dc);
-            pmIdCounter++;
-        }
-    }
-
-    private static Pm createDefaultPm(int id, SimClock clock) {
-        Pm pm = new Pm(id, clock, new PmSpecPowerHpProLiantMl110G3PentiumD930());
-        pm.setMipsProvisioner(new GreedyProvisioner());
-        pm.setRamProvisioner(new GreedyProvisioner());
-        pm.setSizeProvisioner(new GreedyProvisioner());
-        pm.setBwProvisioner(new GreedyProvisioner());
-        return pm;
+        LOGGER.info(String.format("Total Costs: %.2f", cloud.getCosts()));
     }
 }

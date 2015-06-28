@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dmytro
  */
-public class ElasticityManagerInefficient implements ElasticityManager {
+public class ElasticityManagerInefficient extends ElasticityManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticityManagerInefficient.class);
     
@@ -79,9 +79,9 @@ public class ElasticityManagerInefficient implements ElasticityManager {
             if (targetPm != null) {
                 cloud.getMessageBus().push(new VmAllocationMessage(vm, targetPm));
                 updatedAvailablePmResources(targetPm, vm, true);
-                LOGGER.info("%s was decided to allocate to %s.", vm.toShortString(), targetPm.toShortString());
+                LOGGER.info(String.format("%s was decided to allocate to %s.", vm.toShortString(), targetPm.toShortString()));
             } else {
-                LOGGER.warn("%s was not allocated to any pm.", vm.toShortString());
+                LOGGER.warn(String.format("%s was not allocated to any pm.", vm.toShortString()));
             }
         }
 
@@ -92,7 +92,7 @@ public class ElasticityManagerInefficient implements ElasticityManager {
         Ensure.NotNull(vm, "vm");
         Ensure.IsNull(vm.getServer(), "Vm is already allocated.");
 
-        LOGGER.trace("Find target pm for allocation of %s...", vm.toShortString());
+        LOGGER.trace(String.format("Find target pm for allocation of %s...", vm.toShortString()));
 
         for (Datacenter dc : cloud.getDatacenters()) {
             for (Pm pm : dc.getPms()) {
@@ -130,12 +130,12 @@ public class ElasticityManagerInefficient implements ElasticityManager {
         Long vmMips = vm.getSpec().getMips();
         if (isVmAdded) {
             mips += vmMips;
-            LOGGER.info("Consumed mips by %s after allocation of %s: mips=%d,vmMips=%d",
-                    pm.toShortString(), vm.toShortString(), mips, vmMips);
+            LOGGER.info(String.format("Consumed mips by %s after allocation of %s: mips=%d,vmMips=%d",
+                    pm.toShortString(), vm.toShortString(), mips, vmMips));
         } else {
             mips -= vmMips;
-            LOGGER.info("Consumed mips by %s after deallocation of %s: mips=%d,vmMips=%d",
-                    pm.toShortString(), vm.toShortString(), mips, vmMips);
+            LOGGER.info(String.format("Consumed mips by %s after deallocation of %s: mips=%d,vmMips=%d",
+                    pm.toShortString(), vm.toShortString(), mips, vmMips));
         }
 
         consumedMipsPerPm.put(pm.getId(), mips);

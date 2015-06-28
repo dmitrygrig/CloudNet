@@ -171,6 +171,10 @@ public class Ensure {
     public final static void LowerThanOrEquals(double value, double expected, String message) {
         check(value <= expected, String.format("%s should be greater than or equal to %f, but was %f.", message, expected, value));
     }
+    
+    public final static void IsInstanceOf(Object obj, Class clazz){
+        check(clazz.isInstance(obj), String.format("%s should be instance of type %s.", obj, clazz.getName()));
+    }
 
     private static void check(boolean condition, String message) {
         if (isAssert) {

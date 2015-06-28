@@ -48,8 +48,8 @@ public class IaaSCloud extends Cloud {
 
     private final Map<Integer, Vm> vmPool = new HashMap<>();
 
-    public IaaSCloud(int id, SimClock clock, ElasticityManager em) {
-        super(id, clock, em);
+    public IaaSCloud(int id, SimClock clock) {
+        super(id, clock);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class IaaSCloud extends Cloud {
         getMessageBus().removeRange(pmStartMessages);
 
         // process live migrations
-        for (Datacenter dc : datacenters) {
+        for (Datacenter dc : getDatacenters()) {
             for (Pm pm : dc.getPms()) {
                 for (Vm vm : pm.getVms().stream().filter(x -> x.isInMigration()).collect(Collectors.toList())) {
                     long migratedSize = (long) (pm.getSpec().getBw()
@@ -122,9 +122,9 @@ public class IaaSCloud extends Cloud {
         for (Map.Entry<Integer, Vm> entry : vmPool.entrySet()) {
             double penalty = entry.getValue().getSla().getPenalty();
             slaPenaltyCosts += penalty;
-            LOGGER.trace("Penalty costs for Vm %d is %.4f.", entry.getKey(), penalty);
+            LOGGER.trace(String.format("Penalty costs for Vm %d is %.4f.", entry.getKey(), penalty));
         }
-        LOGGER.trace("Overall penalty costs increased to %.2f.", slaPenaltyCosts);
+        LOGGER.trace(String.format("Overall penalty costs increased to %.2f.", slaPenaltyCosts));
     }
 
     @Override
@@ -144,13 +144,13 @@ public class IaaSCloud extends Cloud {
         long currViolations = getVms().stream().filter(x -> x.isInDowntime()).count();
         if (currViolations > 0) {
             violationCount += currViolations;
-            LOGGER.info("Number of violations: %d", violationCount);
+            LOGGER.info(String.format("Number of violations: %d", violationCount));
         }
         
         long currShortViolations = getVms().stream().filter(x -> x.isInShortDowntime()).count();
         if (currShortViolations > 0) {
             shortViolationCount += currShortViolations;
-            LOGGER.info("Number of short violations: %d", currShortViolations);
+            LOGGER.info(String.format("Number of short violations: %d", currShortViolations));
         }
     }
 

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dmytro Grygorenko <dmitrygrig(at)gmail.com>
  */
-public abstract class ElasticityManagerFirstFitBase implements ElasticityManager {
+public abstract class ElasticityManagerFirstFitBase extends ElasticityManager {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticityManagerFirstFitBase.class);
     
@@ -93,9 +93,9 @@ public abstract class ElasticityManagerFirstFitBase implements ElasticityManager
                 runPmAndNotifyIfNecessary(cloud, targetPm);
                 cloud.getMessageBus().push(new VmAllocationMessage(vm, targetPm));
                 updatedAvailablePmResources(targetPm, vm, true);
-                LOGGER.info("%s was decided to allocate to %s.", vm.toShortString(), targetPm.toShortString());
+                LOGGER.info(String.format("%s was decided to allocate to %s.", vm.toShortString(), targetPm.toShortString()));
             } else {
-                LOGGER.warn("%s was not allocated to any pm.", vm.toShortString());
+                LOGGER.warn(String.format("%s was not allocated to any pm.", vm.toShortString()));
             }
         }
         
@@ -113,7 +113,7 @@ public abstract class ElasticityManagerFirstFitBase implements ElasticityManager
                         cloud.getMessageBus().push(new VmMigrationMessage(vm, targetPm));
                         updatedAvailablePmResources(vm.getServer(), vm, false);
                         updatedAvailablePmResources(targetPm, vm, true);
-                        LOGGER.info("%s was decided to migrate to %s.", vm.toShortString(), targetPm.toShortString());
+                        LOGGER.info(String.format("%s was decided to migrate to %s.", vm.toShortString(), targetPm.toShortString()));
                     } else {
                         runPmAndNotifyIfNecessary(cloud, vm.getServer());
 //                        updatedAvailablePmResources(vm.getServer(), vm, true);
@@ -194,12 +194,12 @@ public abstract class ElasticityManagerFirstFitBase implements ElasticityManager
         Long vmMips = !vm.isAllocated() ? getRequestedVmMips(vm) : getProvisionedVmMips(vm);
         if (isVmAdded) {
             mips += vmMips;
-            LOGGER.info("Consumed mips by %s after allocation of %s: mips=%d,vmMips=%d",
-                    pm.toShortString(), vm.toShortString(), mips, vmMips);
+            LOGGER.info(String.format("Consumed mips by %s after allocation of %s: mips=%d,vmMips=%d",
+                    pm.toShortString(), vm.toShortString(), mips, vmMips));
         } else {
             mips -= vmMips;
-            LOGGER.info("Consumed mips by %s after deallocation of %s: mips=%d,vmMips=%d",
-                    pm.toShortString(), vm.toShortString(), mips, vmMips);
+            LOGGER.info(String.format("Consumed mips by %s after deallocation of %s: mips=%d,vmMips=%d",
+                    pm.toShortString(), vm.toShortString(), mips, vmMips));
         }
         
         consumedMipsPerPm.put(pm.getId(), mips);

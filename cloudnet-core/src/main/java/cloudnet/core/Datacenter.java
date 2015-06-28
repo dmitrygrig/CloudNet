@@ -115,7 +115,7 @@ public class Datacenter extends CloudEntity {
         Ensure.NotNull(pm, "pm");
         pm.setDatacenter(this);
         getPms().add(pm);
-        LOGGER.info("%s added to %s.", pm.toShortString(), toShortString());
+        LOGGER.info(String.format("%s added to %s.", pm.toShortString(), toShortString()));
     }
 
     public Cloud getCloud() {
@@ -179,7 +179,7 @@ public class Datacenter extends CloudEntity {
         double powerWithPPue = getUtilizedPowerWithPue();
         long powerOutageDuration = getPowerOutageDuration();
         if (powerOutageDuration > 0L) {
-            LOGGER.info("Power outage duration of %s: %d.", this.toShortString(), powerOutageDuration);
+            LOGGER.info(String.format("Power outage duration of %s: %d.", this.toShortString(), powerOutageDuration));
         }
         double executionTime = TimeFrame.msToHour(getClock().diff() - powerOutageDuration);
         double powerWithPPueDiff = powerWithPPue * executionTime;
